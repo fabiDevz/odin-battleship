@@ -1,3 +1,5 @@
+import {setUbicarNavio} from './TableroDeJuego';
+
 export default class Acorazado
 {
     constructor(longitud, impactos, hundido)
@@ -5,6 +7,8 @@ export default class Acorazado
         this.longitud = longitud;
         this.impactos = impactos;
         this.hundido = hundido;
+        this.vertical = false;
+        this.coordenadas = [];
     }
 
     acierto()
@@ -22,5 +26,10 @@ export default class Acorazado
             }
         }
         return this.hundido;
+    }
+
+    ubicarNavio(coordenadas, tableroDeJuego)
+    {   
+       return tableroDeJuego.setUbicarNavio(this, coordenadas);
     }
 }
