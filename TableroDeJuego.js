@@ -2,10 +2,22 @@ export default class TableroDeJuego {
 
     constructor() {
         this.tablero = Array(10).fill(null).map(() => Array(10).fill('A'));
+        this.listaNavios = [];
+        this.mapaTirosFallidos = [];
 
     }
 
-    setUbicarNavio(barco, coordenadas) {
+    getMapeoTirosFallidos()
+    {
+        return this.mapaTirosFallidos;
+    }
+
+    agregaTiroFallido(coordenadaAtaque)
+    {
+        this.mapaTirosFallidos.push(coordenadaAtaque);
+    }
+
+    setUbicarNavio(navio, coordenadas) {
 
         coordenadas.forEach(([posx,posy])=> {
             if(posx < 0 || posy < 0 || posx > 9 || posy > 9)
@@ -17,14 +29,27 @@ export default class TableroDeJuego {
         coordenadas.forEach(([fila, columna]) => {
             this.tablero[fila][columna] = 'B';
         });
+
+        this.listaNavios.push(navio);
+        return true;
     }
 
-    ataqueRecibido(coordenadaAtaque)
-    {
+    ataqueRecibido(coordenadaAtaque) {
         let posx = coordenadaAtaque[0];
         let posy = coordenadaAtaque[1];
-       
-        return this.tablero[posx][posy] == 'B' ? true : false;
+    
+        if (this.tablero[posx][posy] === 'B') {
+            let navioImpactado = this.listaNavios.find((navio) => {
+                return navio.coordenadas.some(([fila, columna]) => fila === posx && columna === posy);
+            });
+    
+            if (navioImpactado) {
+                navioImpactado.acierto();
+                return true;
+            }
+        }
+        this.agregaTiroFallido(coordenadaAtaque);
+        return false;
     }
 
 }

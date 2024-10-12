@@ -1,6 +1,6 @@
 //clase Tablero
 import TableroDeJuego from './TableroDeJuego';
-import Acorazado from './Acorazado';
+import Navio from './Navio';
 
 
 describe('Test Base - creación del tablero', () => {
@@ -25,9 +25,11 @@ describe('Test ubicaciones navios - Ubicar barcos en coordenadas', () => {
 
     let tableroDeJuego;
     let barco;
+    let barco2;
     beforeEach(() => {
         tableroDeJuego = new TableroDeJuego();
-        barco = new Acorazado(3, 0, false);
+        barco = new Navio(3, 0, false);
+        barco2 = new Navio(3,0,false);
     });
 
     test('Test 1 - Ubicar posicion 0,0 - eje x', () => {
@@ -71,7 +73,20 @@ describe('Test ubicaciones navios - Ubicar barcos en coordenadas', () => {
 
     });
 
-    test('Test 5 - Deberia contar como impacto', () => {
+    test('Test 5 - Agregar correctamente los navios', () => {
+        const posicionBarco1 = [[1, 3], [1, 4], [1, 5]];
+        const posicionBarco2 = [[3, 3], [3, 4], [3, 5]];
+        barco.ubicarNavio(posicionBarco1, tableroDeJuego);
+        barco2.ubicarNavio(posicionBarco2, tableroDeJuego);
+        expect(tableroDeJuego.listaNavios.length).toBe(2);
+
+        expect(tableroDeJuego.listaNavios[0] instanceof Navio).toBe(true);
+        expect(tableroDeJuego.listaNavios[1] instanceof Navio).toBe(true);
+    });
+
+   
+
+    test('Test 6 - Deberia contar como impacto', () => {
         const posicionBarco = [[1, 3], [1, 4], [1, 5]];
         barco.ubicarNavio(posicionBarco, tableroDeJuego);
         expect(tableroDeJuego.ataqueRecibido([1,4])).toBe(true);
@@ -81,20 +96,80 @@ describe('Test ubicaciones navios - Ubicar barcos en coordenadas', () => {
 
     });
 
-    test('Test 6 - NO deberia contar como impacto', () => {
+    test('Test 7 - NO deberia contar como impacto', () => {
         const posicionBarco = [[1, 3], [1, 4], [1, 5]];
         barco.ubicarNavio(posicionBarco, tableroDeJuego);
         expect(tableroDeJuego.ataqueRecibido([1,6])).toBe(false);
         expect(tableroDeJuego.ataqueRecibido([1,2])).toBe(false);
         expect(tableroDeJuego.ataqueRecibido([0,3])).toBe(false);
 
-
-
-// queda pendiente averiguar a que barco impacto tener identificados los barcos y sus posiciones para saber a cual impacto y a cual no
-// tambien mapear los tiros fallidos 
-
     });
 
+
+
+
+})
+
+describe('Comprobar si la información de los ataques se registra exitosamente - Navios afectados y su posición, Conteo de daño, Hundido ,Mapeo de tiros fallidos,  ', () => {
+    let tableroDeJuego;
+    let navioRojo;
+    let navioAzul;
+    beforeEach(() => {
+        tableroDeJuego = new TableroDeJuego();
+        navioRojo = new Navio(5,0,false,'Navio Rojo');
+        navioAzul = new Navio(5,0,false,'Navio Azul');
+
+        const posNavioRojo = [[1, 1], [1, 2], [1, 3],[1,4],[1,5]];
+        const posNavioAzul = [[3,7],[4,7],[5,7],[6,7],[7,7]];
+
+        navioRojo.ubicarNavio(posNavioRojo, tableroDeJuego);
+        navioAzul.ubicarNavio(posNavioAzul, tableroDeJuego);
+ 
+    });
+
+    test('Test 1 - Deberia ser el navio rojo golpeado', () => {
+        expect(tableroDeJuego.ataqueRecibido([1,1])).toBe(true);
+        expect(navioRojo.impactos).toBe(1);
+    });
+
+    test('Test 2 - Deberia ser el navio azul golpeado', () => {
+        expect(tableroDeJuego.ataqueRecibido([5,7])).toBe(true);
+        expect(navioAzul.impactos).toBe(1);
+    });
+
+    test('Test 3 - Deberia tener un impacto cada navio',() => {
+        expect(tableroDeJuego.ataqueRecibido([5,7])).toBe(true);
+        expect(tableroDeJuego.ataqueRecibido([1,1])).toBe(true);
+        expect(navioAzul.impactos).toBe(1);
+        expect(navioRojo.impactos).toBe(1);
+    })
+
+    test('Test 4 - Deberian añadirse mas impactos',() => {
+        tableroDeJuego.ataqueRecibido([1,1]);
+        tableroDeJuego.ataqueRecibido([1,2]);
+        tableroDeJuego.ataqueRecibido([1,3]);
+        tableroDeJuego.ataqueRecibido([1,4]);
+        expect(navioRojo.impactos).toBe(4);
+    })
+
+    test('Test 5 - Deberia mostrarse el estado hundido como true', () => {
+
+        tableroDeJuego.ataqueRecibido([1,1]);
+        tableroDeJuego.ataqueRecibido([1,2]);
+        tableroDeJuego.ataqueRecibido([1,3]);
+        tableroDeJuego.ataqueRecibido([1,4]);
+        tableroDeJuego.ataqueRecibido([1,5]);
+        expect(navioRojo.impactos).toBe(5);
+        expect(navioRojo.hundido).toBe(true);
+    })
+
+    test('Test 6 - Deberia mostrar tiros fallidos ', () => {
+        expect(tableroDeJuego.ataqueRecibido([8,0])).toBe(false);
+        expect(tableroDeJuego.ataqueRecibido([8,1])).toBe(false);
+        expect(tableroDeJuego.ataqueRecibido([8,2])).toBe(false);
+        expect(tableroDeJuego.getMapeoTirosFallidos()).toStrictEqual([[8,0],[8,1],[8,2]]);
+
+    })
 
 
 })
