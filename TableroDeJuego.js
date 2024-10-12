@@ -4,7 +4,28 @@ export default class TableroDeJuego {
         this.tablero = Array(10).fill(null).map(() => Array(10).fill('A'));
         this.listaNavios = [];
         this.mapaTirosFallidos = [];
+        this.status = true;
 
+    }
+
+    getHundidos()
+    {
+        let totalHundidos = 0;
+        this.listaNavios.forEach(navio => {
+            if(navio.hundido) totalHundidos++;
+        })
+        return totalHundidos;
+    }
+
+    getStatus()
+    {
+        let status = this.status? 'En progreso':'Terminado';
+        let totalNavios = this.listaNavios.length;
+        let totalHundidos = this.getHundidos();
+
+        
+        
+        return "Navios: "+totalNavios+"\n"+"Hundidos: "+totalHundidos+"\n"+"Juego: "+status;
     }
 
     getMapeoTirosFallidos()
@@ -45,6 +66,7 @@ export default class TableroDeJuego {
     
             if (navioImpactado) {
                 navioImpactado.acierto();
+                this.status = this.getHundidos() == this.listaNavios.length? false:true;
                 return true;
             }
         }

@@ -173,3 +173,39 @@ describe('Comprobar si la información de los ataques se registra exitosamente -
 
 
 })
+
+describe('Comprobar hundimientos', () => {
+
+    let tableroDeJuego;
+    let navioRojo;
+    let navioAzul;
+    beforeEach(() => {
+        tableroDeJuego = new TableroDeJuego();
+        navioRojo = new Navio(2,0,false,'Navio Rojo');
+        navioAzul = new Navio(2,0,false,'Navio Azul');
+
+        const posNavioRojo = [[1, 1], [1, 2]];
+        const posNavioAzul = [[3,7],[4,7]];
+
+        navioRojo.ubicarNavio(posNavioRojo, tableroDeJuego);
+        navioAzul.ubicarNavio(posNavioAzul, tableroDeJuego);
+ 
+    });
+
+    test('Test 1 - Comprobar 1 barco hundido ', () => {
+        tableroDeJuego.ataqueRecibido([1,1]);
+        tableroDeJuego.ataqueRecibido([1,2]);
+
+        expect(tableroDeJuego.getStatus()).toBe('Navios: 2\nHundidos: 1\nJuego: En progreso');
+    })
+
+    test('Test 2 - Comprobar todos los barcos hundidos ', () => {
+        tableroDeJuego.ataqueRecibido([1,1]);
+        tableroDeJuego.ataqueRecibido([1,2]);
+
+        tableroDeJuego.ataqueRecibido([3,7]);
+        tableroDeJuego.ataqueRecibido([4,7]);
+
+        expect(tableroDeJuego.getStatus()).toBe('Navios: 2\nHundidos: 2\nJuego: Terminado');
+    })
+})
