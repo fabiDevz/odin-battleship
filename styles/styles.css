@@ -1,0 +1,48 @@
+* {
+    background-color: #1A77BC;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #FFFF;
+    margin:0;
+}
+
+.name-container{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+
+
+.tablero-container {
+    display: grid;
+    grid-template-columns:  repeat(11, 60px); 
+    grid-gap: 0;
+    justify-content: center;
+    
+
+}
+
+.celda {
+    width: 60px; 
+    height: 60px; 
+    font-size: 32px;
+    border: 1px solid #FFF; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; 
+    padding: 0; 
+}
+
+.celda-seleccionable:hover{
+    background-color: green;
+}
+
+.celda-primera-fila{
+   border: none;
+}
+
+.celda-primera-columna{
+    border: none;
+}
