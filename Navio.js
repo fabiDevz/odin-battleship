@@ -1,4 +1,4 @@
-import {setUbicarNavio} from './TableroDeJuego';
+import TableroDeJuego from './TableroDeJuego.js';
 
 export default class Navio
 {
