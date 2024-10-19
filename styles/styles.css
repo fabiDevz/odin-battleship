@@ -93,3 +93,22 @@
     text-align: center;
     cursor: text;
 }
+
+.div-titulo-flota
+{
+    display: flex;
+    justify-content: center;
+}
+
+.celda.hover {
+    background-color: #34b600; /* Color al hacer hover */
+    border-color: #c5cc00;     /* Cambia el color del borde también */
+}
+
+.celda.hover-error{
+    background-color: rgb(117, 25, 25);
+}
+
+.celda-ocupada{
+    background-color: rgb(142, 142, 142);
+}

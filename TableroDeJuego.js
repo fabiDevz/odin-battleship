@@ -5,6 +5,8 @@ export default class TableroDeJuego {
         this.listaNavios = [];
         this.mapaTirosFallidos = [];
         this.status = true;
+        this.flota = [5,4,3,2,2];
+        this.selectorFlota = 0;
 
     }
 
