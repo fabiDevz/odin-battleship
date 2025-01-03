@@ -17,6 +17,76 @@ let flotasEnemigas = [
     'Dominio del Abismo'
 ];
 
+let turnoActual = 'jugador';
+let juegoEnCurso = true;
+let flag_navio_impactado = false;
+let flag_navio_impactado_cpu = false;
+let flag_turno_bloqueado = false;
+
+
+function alternarTurno() {
+
+    turnoActual = turnoActual == "jugador" ? "cpu" : "jugador";
+
+    if (turnoActual == "jugador") {
+        console.log("Es el turno del jugador 1");
+
+    }
+    if (turnoActual == "cpu") {
+        console.log("Es el turno de la CPU");
+    }
+    actualizarTurnoUI();
+}
+
+function bloquearTurno() {
+    flag_turno_bloqueado = true;
+    document.body.style.pointerEvents = "none";
+}
+
+function desbloquearTurno() {
+    flag_turno_bloqueado = false;
+    document.body.style.pointerEvents = "auto";
+}
+
+function realizarJugada(fila, columna) {
+    if (!juegoEnCurso) return; // Verifica si el juego sigue activo.
+
+    if (turnoActual === "jugador") {
+        let coordenada_disparo = [fila, columna];
+        flag_navio_impactado = jugadorCpu.tablero.ataqueRecibido(coordenada_disparo);
+        console.log("El jugador disparó en " + coordenada_disparo[0] + ", " + coordenada_disparo[1]);
+
+        // Alterna al turno de la CPU y bloquea el tablero del jugador.
+        turnoActual = "cpu";
+        actualizarTurnoUI();
+        console.log("Turno")
+        bloquearTurno();
+
+        // Espera un momento antes del turno de la CPU.
+        setTimeout(() => {
+            realizarJugadaCPU();
+        }, 2000);
+    }
+}
+
+function realizarJugadaCPU() {
+    if (!juegoEnCurso) return;
+
+    let coordenada_disparo_cpu = jugadorCpu.generarDisparo();
+    flag_navio_impactado_cpu = jugador1.tablero.ataqueRecibido(coordenada_disparo_cpu);
+    console.log("CPU disparó en " + coordenada_disparo_cpu[0] + ", " + coordenada_disparo_cpu[1]);
+
+    // Después de que la CPU termina su jugada, desbloquea el turno del jugador.
+    desbloquearTurno();
+    turnoActual = "jugador";
+    actualizarTurnoUI();
+}
+
+function actualizarTurnoUI() {
+    const divTurnos = document.querySelector(".div-turnos h2");
+    divTurnos.textContent = turnoActual === "jugador" ? "Turno del Jugador" : "Turno de la CPU";
+}
+
 
 
 function crearTableroUI() {
@@ -358,21 +428,56 @@ function crearTablero(parentDiv, tipo = "default") {
         for (let j = 0; j < columnas; j++) {
             const celda = document.createElement('div');
             celda.classList.add('celda');
-            celda.classList.add('celda-seleccionable');
+            if (tipo != 'jugador') {
+                celda.classList.add('celda-seleccionable');
+                celda.addEventListener('click', function () {
+                    if (!celda.classList.contains('celda-seleccionable')) return;
+                    celda.classList.remove('celda-seleccionable');
+                    celda.classList.add('celda-fallo');
+                    realizarJugada(i, j);
+
+                    if (flag_navio_impactado) {
+                        const divCeldaAcierto = document.createElement("div");
+                        divCeldaAcierto.classList.add('circulo-celda-acierto');
+                        celda.appendChild(divCeldaAcierto);
+                        flag_navio_impactado = false;
+                    } else {
+                        const divCeldaFallo = document.createElement("div");
+                        divCeldaFallo.classList.add('circulo-celda-fallo');
+                        celda.appendChild(divCeldaFallo);
+
+
+                    }
+
+                });
+
+            } else {
+                celda.classList.add('celda-jugador');
+            }
+
 
             if (i === 0 && j === 0) {
                 celda.classList.add('celda-primera-fila');
                 celda.classList.remove('celda-seleccionable');
+                if (tipo == 'jugador') {
+                    celda.classList.remove('celda-jugador');
+                }
             }
 
             if (i === 0 && j > 0) {
                 celda.textContent = j;
                 celda.classList.add('celda-primera-fila');
                 celda.classList.remove('celda-seleccionable');
+                if (tipo == 'jugador') {
+                    celda.classList.remove('celda-jugador');
+                }
             } else if (j === 0 && i > 0) {
                 celda.textContent = letras.charAt(i - 1);
                 celda.classList.add('celda-primera-columna');
                 celda.classList.remove('celda-seleccionable');
+                if (tipo == 'jugador') {
+                    celda.classList.remove('celda-jugador');
+                }
             }
 
             divContainer.appendChild(celda);
@@ -401,22 +506,22 @@ function revelarPosiciones(tablero) {
     }
 
     const divJugador = document.querySelector('.tablero-container-jugador');
-    const celdasDivJugador = divJugador.querySelectorAll('.celda-seleccionable');
+    const celdasDivJugador = divJugador.querySelectorAll('.celda-jugador');
 
-    celdasDivJugador.forEach((celda,index) => {
-        let filaCelda = Math.floor(index / 10);  
-        let columnaCelda = index % 10; 
-        
+    celdasDivJugador.forEach((celda, index) => {
+        let filaCelda = Math.floor(index / 10);
+        let columnaCelda = index % 10;
+
         for (let fila = 0; fila < tablero.length; fila++) {
             for (let columna = 0; columna < tablero[fila].length; columna++) {
-    
+
                 if (tablero[fila][columna] === 'B' && fila == filaCelda && columnaCelda == columna) {
                     celda.classList.add('resaltada');
                 }
             }
         }
-    
-        
+
+
     });
 
 
