@@ -258,13 +258,14 @@
 
 .celda-jugador {
     background-color: #05A8FC;
-    border: 1px solid rgb(210, 207, 207);
+
 }
 
 .celda-jugador.resaltada {
-    background-color: grey;
-    border: none;
-    border-radius: 5px;
+    background-color: rgb(86, 253, 136);
+    border: 1px solid white;
+
+   
 }
 
 .celda-fallo
@@ -293,3 +294,4 @@
     height: 10px;
     border-radius: 50%;
 }
+

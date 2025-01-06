@@ -76,7 +76,31 @@ function realizarJugadaCPU() {
     flag_navio_impactado_cpu = jugador1.tablero.ataqueRecibido(coordenada_disparo_cpu);
     console.log("CPU disparó en " + coordenada_disparo_cpu[0] + ", " + coordenada_disparo_cpu[1]);
 
+    const divJugador = document.querySelector('.tablero-container-jugador');
+    const celdasDivJugador = divJugador.querySelectorAll('.celda-jugador');
+    let index = 0;
+    for (let fila = 1; fila <= 10; fila++) {
+        for (let columna = 1; columna <= 10; columna++) {
+            if (fila == coordenada_disparo_cpu[0] && columna == coordenada_disparo_cpu[1]) {
+
+                if (flag_navio_impactado_cpu) {
+                    const divCeldaAciertoCPU = document.createElement("div");
+                    divCeldaAciertoCPU.classList.add('circulo-celda-acierto');
+                    celdasDivJugador[index].appendChild(divCeldaAciertoCPU);
+                    break;
+                } else {
+                    const divCeldaFallo = document.createElement("div");
+                    divCeldaFallo.classList.add('circulo-celda-fallo');
+                    celdasDivJugador[index].appendChild(divCeldaFallo);
+                }
+
+            }
+            index++;
+        }
+    }
+
     // Después de que la CPU termina su jugada, desbloquea el turno del jugador.
+
     desbloquearTurno();
     turnoActual = "jugador";
     actualizarTurnoUI();
@@ -84,7 +108,8 @@ function realizarJugadaCPU() {
 
 function actualizarTurnoUI() {
     const divTurnos = document.querySelector(".div-turnos h2");
-    divTurnos.textContent = turnoActual === "jugador" ? "Turno del Jugador" : "Turno de la CPU";
+    let nombreJugador = jugador1.nombre;
+    divTurnos.textContent = turnoActual === "jugador" ? "Turno de " + nombreJugador : "Turno de CPU";
 }
 
 
@@ -430,10 +455,14 @@ function crearTablero(parentDiv, tipo = "default") {
             celda.classList.add('celda');
             if (tipo != 'jugador') {
                 celda.classList.add('celda-seleccionable');
+                const sonidoClick = new Audio('./assets/sonido_disparo.mp3');
+                sonidoClick.volume = 0.5;
                 celda.addEventListener('click', function () {
                     if (!celda.classList.contains('celda-seleccionable')) return;
                     celda.classList.remove('celda-seleccionable');
                     celda.classList.add('celda-fallo');
+                    sonidoClick.currentTime = 0; // Reinicia el sonido
+                    sonidoClick.play(); // Reproduce el sonido
                     realizarJugada(i, j);
 
                     if (flag_navio_impactado) {
