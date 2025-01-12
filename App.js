@@ -22,22 +22,28 @@ let juegoEnCurso = true;
 let flag_navio_impactado = false;
 let flag_navio_impactado_cpu = false;
 let flag_turno_bloqueado = false;
+let aciertosJugador1 = 0;
+let aciertosJugadorCPU = 0;
 
 
-function alternarTurno() {
 
-    turnoActual = turnoActual == "jugador" ? "cpu" : "jugador";
 
-    if (turnoActual == "jugador") {
-        console.log("Es el turno del jugador 1");
+function verificarGanador()
+{
+    if(jugador1.tablero.getHundidos() == 5)
+    {
+        alert("Ha Ganado CPU ! ");
+        juegoEnCurso = false;
 
     }
-    if (turnoActual == "cpu") {
-        console.log("Es el turno de la CPU");
+
+    if(jugadorCpu.tablero.getHundidos() == 5)
+    {
+        alert("! Has Ganado "+jugador1.nombre);
+        juegoEnCurso = false;
     }
-    actualizarTurnoUI();
+    bloquearTurno();
 }
-
 function bloquearTurno() {
     flag_turno_bloqueado = true;
     document.body.style.pointerEvents = "none";
@@ -55,18 +61,22 @@ function realizarJugada(fila, columna) {
         let coordenada_disparo = [fila, columna];
         flag_navio_impactado = jugadorCpu.tablero.ataqueRecibido(coordenada_disparo);
         console.log("El jugador disparó en " + coordenada_disparo[0] + ", " + coordenada_disparo[1]);
+        if(flag_navio_impactado) aciertosJugador1++;
 
         // Alterna al turno de la CPU y bloquea el tablero del jugador.
         turnoActual = "cpu";
         actualizarTurnoUI();
         console.log("Turno")
         bloquearTurno();
+        
 
         // Espera un momento antes del turno de la CPU.
         setTimeout(() => {
             realizarJugadaCPU();
         }, 2000);
     }
+    verificarGanador();
+    actualizarInfoJugadores();
 }
 
 function realizarJugadaCPU() {
@@ -75,14 +85,17 @@ function realizarJugadaCPU() {
     let coordenada_disparo_cpu = jugadorCpu.generarDisparo();
     flag_navio_impactado_cpu = jugador1.tablero.ataqueRecibido(coordenada_disparo_cpu);
     console.log("CPU disparó en " + coordenada_disparo_cpu[0] + ", " + coordenada_disparo_cpu[1]);
-
+    if(flag_navio_impactado_cpu) aciertosJugadorCPU++;
     const divJugador = document.querySelector('.tablero-container-jugador');
     const celdasDivJugador = divJugador.querySelectorAll('.celda-jugador');
     let index = 0;
     for (let fila = 1; fila <= 10; fila++) {
         for (let columna = 1; columna <= 10; columna++) {
             if (fila == coordenada_disparo_cpu[0] && columna == coordenada_disparo_cpu[1]) {
-
+                const sonidoClick = new Audio('./assets/sonido_disparo.mp3');
+                sonidoClick.volume = 0.5;
+                sonidoClick.currentTime = 0; // Reinicia el sonido
+                sonidoClick.play(); // Reproduce el sonido
                 if (flag_navio_impactado_cpu) {
                     const divCeldaAciertoCPU = document.createElement("div");
                     divCeldaAciertoCPU.classList.add('circulo-celda-acierto');
@@ -104,6 +117,8 @@ function realizarJugadaCPU() {
     desbloquearTurno();
     turnoActual = "jugador";
     actualizarTurnoUI();
+    actualizarInfoJugadores();
+   
 }
 
 function actualizarTurnoUI() {
@@ -393,6 +408,18 @@ function setFlotaJugador() {
     configurarTablero();
 }
 
+function actualizarInfoJugadores()
+{
+    const divInfoJugador = document.querySelector('.div-jugador');
+    const spanInfoJugador = divInfoJugador.children[1];
+
+    const divInfoCpu = document.querySelector('.div-cpu');
+    const spanInfoCpu = divInfoCpu.children[1];
+
+    spanInfoJugador.textContent = "Flota : "+(5-jugador1.tablero.getHundidos()) +"\n| Aciertos : "+aciertosJugador1 +" \n| Hundidos : "+jugadorCpu.tablero.getHundidos();
+    spanInfoCpu.textContent = "Flota : "+(5-jugadorCpu.tablero.getHundidos()) +"\n| Aciertos : "+aciertosJugadorCPU +" \n| Hundidos : "+jugador1.tablero.getHundidos();
+}
+
 function comenzarJuego() {
     limpiarDOM();
     const body = document.body;
@@ -412,9 +439,10 @@ function comenzarJuego() {
 
     const infoJugador = document.createElement('span');
     const infoCpu = document.createElement('span');
+    
 
-    infoJugador.textContent = "Disparos : \nPrecisión: 100%";
-    infoCpu.textContent = "Disparos : \nPrecisión: 80%";
+    infoJugador.textContent = "Flota : "+5 +"\n| Aciertos : "+aciertosJugador1 +" \n| Hundidos : "+jugadorCpu.tablero.getHundidos();
+    infoCpu.textContent = "Flota : "+5 +"\n| Aciertos : "+aciertosJugadorCPU +" \n| Hundidos : "+jugador1.tablero.getHundidos();
 
     const infoTurnos = document.createElement('h2');
     infoTurnos.textContent = "Ahora es el turno de " + jugador1.nombre;
@@ -464,6 +492,7 @@ function crearTablero(parentDiv, tipo = "default") {
                     sonidoClick.currentTime = 0; // Reinicia el sonido
                     sonidoClick.play(); // Reproduce el sonido
                     realizarJugada(i, j);
+                   
 
                     if (flag_navio_impactado) {
                         const divCeldaAcierto = document.createElement("div");

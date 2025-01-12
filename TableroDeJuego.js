@@ -50,19 +50,16 @@ export default class TableroDeJuego {
             this.tablero[fila][columna] = 'B';
         });
 
-        console.log("Te colocamos el navio y que tanto");
         navio.setCoordenadas(coordenadas);
         this.listaNavios.push(navio);
         return true;
     }
-    // formato de la coordenada ? --->  [fila,columna]
+    
     ataqueRecibido(coordenadaAtaque) {
         let posx = coordenadaAtaque[0] - 1 ;
         let posy = coordenadaAtaque[1] - 1;
 
-      //  console.log('posx:'+posx, 'posy:'+posy);
-     //   console.table(this.tablero);
-     // las coordenadas del navio estan llegando undefined : ~ 28 de diciembre 
+
 
         if (this.tablero[posx][posy] === 'B') {
             let navioImpactado = this.listaNavios.find((navio) => {
@@ -72,15 +69,11 @@ export default class TableroDeJuego {
             if (navioImpactado) {
                 navioImpactado.acierto();
                 this.status = this.getHundidos() == this.listaNavios.length ? false : true;
-
-                console.log("Me diste ctm ...");
-
                 console.log(this.getStatus());
                 return true;
             }
         }
         this.agregaTiroFallido(coordenadaAtaque);
-        console.log("No me achuntaste tonto wn...");
         return false;
     }
 
@@ -112,9 +105,6 @@ export default class TableroDeJuego {
                 if (!colision) {
                     for (let j = 0; j < tamanoBarco; j++) {
                         const coord = `${fila},${columna + j}`;
-
-                        console.log(`Agregando coordenada fila=${fila}, columna=${columna + j}`);
-
                         coordenadas.push([fila, columna + j]);
                         coordenadasOcupadas.add(coord); 
                     }
@@ -125,25 +115,22 @@ export default class TableroDeJuego {
                 case 5:
                     let portaAviones = new Navio(5, 0, false, 'Porta Aviones');
                     this.setUbicarNavio(portaAviones, coordenadas);
-
-                    console.log("Ubicado el portaAviones");
                     break;
 
                 case 4:
                     let acorazado = new Navio(4, 0, false, 'Acorazado');
                     this.setUbicarNavio(acorazado, coordenadas);
-                    console.log("Ubicado el acorazado");
                     break;
 
                 case 3:
                     let bombardero = new Navio(3, 0, false, 'Bombardero');
                     this.setUbicarNavio(bombardero, coordenadas);
-                    console.log("Ubicado el bombardero");
+                   
                     break;
                 case 2:
                     let submarino = new Navio(2, 0, false, 'Submarino');
                     this.setUbicarNavio(submarino, coordenadas);
-                    console.log("Ubicado el submarino");
+                    
                     break;
                 default:
                     alert('Algo salio mal :c');
@@ -151,7 +138,6 @@ export default class TableroDeJuego {
             }
     
             this.selectorFlota++;
-            console.log(`Coordenadas para el barco de tamaño ---- XD :  ${tamanoBarco}:`, coordenadas);
         }
     }
     
